@@ -1,6 +1,5 @@
 from DatosLoteria import DatosLoteria
 from ModeloLoteria import ModeloLoteria
-from GeneradorSeries import GeneradorSeries
 from VisualizadorResultados import VisualizadorResultados
 import pandas as pd
 import os
@@ -21,10 +20,9 @@ class EjecutarSimulacion:
         """
         self.cantidad_entrenamiento = cantidad_entrenamiento
         self.cantidad_evaluacion = cantidad_evaluacion
-        self.datos_loteria = None
+        self.datos_loteria = DatosLoteria(semilla=123)
         self.modelo = None
         self.visualizador = VisualizadorResultados()
-        self.generador = GeneradorSeries(semilla=123)
         self.df_nuevas = None
         self.probabilidades = None
     
@@ -68,7 +66,6 @@ class EjecutarSimulacion:
     def _generar_datos(self):
         """Genera los datos simulados para entrenamiento"""
         print("\n[1] Generando datos simulados para entrenamiento...")
-        self.datos_loteria = DatosLoteria(cantidad_combinaciones=self.cantidad_entrenamiento)
         self.df_entrenamiento = self.datos_loteria.generar_datos_entrenamiento(
             cantidad=self.cantidad_entrenamiento
         )
@@ -99,8 +96,9 @@ class EjecutarSimulacion:
         """Genera nuevas combinaciones para evaluar"""
         print(f"\n[3] Generando {self.cantidad_evaluacion} combinaciones para evaluar...")
         
-        nuevas_series = self.generador.generar_series(self.cantidad_evaluacion)
-        self.df_nuevas = pd.DataFrame(nuevas_series, columns=[f'Num{i+1}' for i in range(6)])
+        self.df_nuevas = self.datos_loteria.generar_datos_evaluacion(
+            cantidad=self.cantidad_evaluacion
+        )
         
         print(f"   ✓ {len(self.df_nuevas)} combinaciones generadas")
     

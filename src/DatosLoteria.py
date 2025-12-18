@@ -8,9 +8,9 @@ import numpy as np
 from GeneradorSeries import GeneradorSeries
 
 class DatosLoteria:
-    def __init__(self, cantidad_combinaciones=1000):
+    def __init__(self, cantidad_combinaciones=1000, semilla=None):
         self.cantidad_combinaciones = cantidad_combinaciones
-        self.generador = GeneradorSeries()
+        self.generador = GeneradorSeries(semilla=semilla)
         self.datos = self.generar_datos()
     
     def generar_datos(self):
@@ -44,4 +44,18 @@ class DatosLoteria:
         np.random.shuffle(exitos)
         df['Exito'] = exitos
         
+        return df
+    
+    def generar_datos_evaluacion(self, cantidad=100):
+        """
+        Genera un DataFrame con combinaciones para evaluar (sin columna 'Exito')
+        
+        Args:
+            cantidad: número de combinaciones a generar
+        
+        Returns:
+            DataFrame con combinaciones para evaluar
+        """
+        series = self.generador.generar_series(cantidad)
+        df = pd.DataFrame(series, columns=[f'Num{i+1}' for i in range(6)])
         return df
