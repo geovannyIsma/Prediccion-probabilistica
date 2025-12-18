@@ -3,6 +3,7 @@ from ModeloLoteria import ModeloLoteria
 from GeneradorSeries import GeneradorSeries
 from VisualizadorResultados import VisualizadorResultados
 import pandas as pd
+import os
 
 
 class EjecutarSimulacion:
@@ -75,6 +76,9 @@ class EjecutarSimulacion:
         print(f"   ✓ Datos generados: {len(self.df_entrenamiento)} combinaciones")
         print(f"   ✓ Combinaciones exitosas: {self.df_entrenamiento['Exito'].sum()}")
         print(f"   ✓ Tasa de éxito: {self.df_entrenamiento['Exito'].mean()*100:.1f}%")
+        
+        # Guardar datos de entrenamiento
+        self._guardar_dataset(self.df_entrenamiento, 'datos_entrenamiento.csv')
     
     def _entrenar_modelo(self):
         """Entrena el modelo de predicción"""
@@ -107,6 +111,11 @@ class EjecutarSimulacion:
         self.probabilidades = self.modelo.predecir_probabilidades(self.df_nuevas)
         
         print(f"   ✓ Probabilidades calculadas para {len(self.probabilidades)} combinaciones")
+        
+        # Guardar combinaciones evaluadas con sus probabilidades
+        df_resultados = self.df_nuevas.copy()
+        df_resultados['Probabilidad'] = self.probabilidades
+        self._guardar_dataset(df_resultados, 'combinaciones_evaluadas.csv')
     
     def _mostrar_resultados(self):
         """Muestra por pantalla la mejor combinación y estadísticas"""
@@ -128,6 +137,21 @@ class EjecutarSimulacion:
             self.probabilidades, 
             top_n=10
         )
+    
+    def _guardar_dataset(self, dataframe, nombre_archivo):
+        """
+        Guarda un dataset en formato CSV
+        
+        Args:
+            dataframe: DataFrame a guardar
+            nombre_archivo: nombre del archivo (con extensión)
+        """
+        output_dir = 'output'
+        os.makedirs(output_dir, exist_ok=True)
+        
+        filepath = os.path.join(output_dir, nombre_archivo)
+        dataframe.to_csv(filepath, index=False)
+        print(f"   ✓ Dataset guardado en: {filepath}")
 
 
 def main():

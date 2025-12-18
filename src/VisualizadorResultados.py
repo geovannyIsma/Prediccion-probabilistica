@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import os
 
 
 class VisualizadorResultados:
@@ -32,6 +33,13 @@ class VisualizadorResultados:
         
         # Ordenar por probabilidad descendente y tomar top_n
         df_top = df_resultados.nlargest(top_n, 'Probabilidad')
+        
+        # Guardar top combinaciones en CSV
+        output_dir = 'output'
+        os.makedirs(output_dir, exist_ok=True)
+        csv_path = os.path.join(output_dir, f'top_{top_n}_combinaciones.csv')
+        df_top.to_csv(csv_path, index=False)
+        print(f"   ✓ Top {top_n} combinaciones guardadas en: {csv_path}")
         
         # Crear etiquetas para las combinaciones
         etiquetas = []
@@ -68,6 +76,15 @@ class VisualizadorResultados:
         
         # Ajustar layout
         plt.tight_layout()
+
+        # Crear directorio de salida si no existe
+        output_dir = 'output'
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Guardar la figura
+        output_path = os.path.join(output_dir, 'top_combinaciones.png')
+        plt.savefig(output_path, dpi=300)
+        print(f"   ✓ Gráfico guardado en: {output_path}")
         plt.show()
     
     def mostrar_estadisticas(self, probabilidades):
@@ -102,9 +119,9 @@ class VisualizadorResultados:
         # Obtener la combinación
         mejor_combinacion = [int(df_series.iloc[idx_max][f'Num{i+1}']) for i in range(6)]
         
-        print("\n" + "🎯" * 30)
+        print("\n" + "*" * 30)
         print("MEJOR COMBINACIÓN ENCONTRADA")
-        print("🎯" * 30)
+        print("*" * 30)
         print(f"\nCombinación: {mejor_combinacion}")
         print(f"Probabilidad de éxito: {prob_max:.6f} ({prob_max*100:.4f}%)")
         print("=" * 60)
